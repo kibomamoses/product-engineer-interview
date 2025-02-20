@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'libs/database/dto/create-user.dto';
 import { UserRepository } from 'libs/database/repository/user.repository';
-import { UserSchema, validatePassword } from 'libs/database/schema/user.db';
+import { User, validatePassword } from 'libs/database/schema/user.db';
 
 @Injectable()
 export class AuthService {
@@ -48,7 +48,7 @@ export class AuthService {
     lastName: string,
     emailAddress: string,
     password: string,
-  ): Promise<UserSchema | undefined> {
+  ): Promise<User | undefined> {
     try {
       const dto = new CreateUserDto();
       dto.firstName = firstName;

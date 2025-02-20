@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from 'libs/database/dto/create-customer.dto';
 import { CustomerRepository } from 'libs/database/repository/customer.repository';
-import { CustomerSchema } from 'libs/database/schema/customer.db';
+import { Customer } from 'libs/database/schema/customer.db';
 
 @Injectable()
 export class CustomerService {
   constructor(private readonly customerRepository: CustomerRepository) {}
 
-  async getAllCustomers(): Promise<CustomerSchema[]> {
+  async getAllCustomers(): Promise<Customer[]> {
     try {
       const customers = await this.customerRepository.findAll();
       return customers;
@@ -16,7 +16,7 @@ export class CustomerService {
     }
   }
 
-  async createCustomer(dto: CreateCustomerDto): Promise<CustomerSchema> {
+  async createCustomer(dto: CreateCustomerDto): Promise<Customer> {
     try {
       const customers = await this.customerRepository.create(dto);
       return customers;

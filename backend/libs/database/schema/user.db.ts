@@ -6,45 +6,36 @@ import * as bcrypt from 'bcrypt';
   timestamps: true,
   collection: 'users',
 })
-export class UserSchema extends Document {
-  @Prop({
-    required: true,
-  })
+export class User extends Document {  
+  @Prop({ required: true })
   firstName: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop({ required: true })
   lastName: string;
-  @Prop({
-    required: true,
-    unique: true,
-  })
+
+  @Prop({ required: true, unique: true })
   emailAddress: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop({ required: true })
   password: string;
 
   fullName: string;
-
   createdAt: Date;
-
   updatedAt: Date;
 }
 
-export const User = SchemaFactory.createForClass(UserSchema);
-// Add virtual property for 'type'
-User.virtual('fullName').get(function (this: UserSchema) {
-  return this.firstName + ' ' + this.lastName;
+
+export const UserSchema = SchemaFactory.createForClass(User);
+
+
+UserSchema.virtual('fullName').get(function (this: User) {
+  return `${this.firstName} ${this.lastName}`;
 });
 
-// Middleware to hash the password before saving it to the database
-User.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
+// Hash password before saving
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -54,8 +45,8 @@ User.pre('save', async function (next) {
   }
 });
 
-// Middleware to hash the password on update if it's present
-User.pre('findOneAndUpdate', async function (next) {
+// Hash password before updating
+UserSchema.pre('findOneAndUpdate', async function (next) {
   const update: any = this.getUpdate();
   if (update.password) {
     try {
@@ -69,13 +60,12 @@ User.pre('findOneAndUpdate', async function (next) {
     next();
   }
 });
-// Method to validate the password
-export const validatePassword = async function (
-  inputPassword: string,
-  password: string,
-): Promise<boolean> {
-  return bcrypt.compare(inputPassword, password);
+
+// Validate password method
+export const validatePassword = async (inputPassword: string, hashedPassword: string): Promise<boolean> => {
+  return bcrypt.compare(inputPassword, hashedPassword);
 };
-// Ensure virtuals are included when converting document to JSON
-User.set('toJSON', { virtuals: true });
-User.set('toObject', { virtuals: true });
+
+// virtuals are included in JSON responses
+UserSchema.set('toJSON', { virtuals: true });
+UserSchema.set('toObject', { virtuals: true });

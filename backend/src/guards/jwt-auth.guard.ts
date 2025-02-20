@@ -1,37 +1,35 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  HttpStatus,
-  HttpException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest();
+    const authHeader = request.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('No token provided');
+    }
+
     try {
-      const request = context.switchToHttp().getRequest();
-      const authHeader = request.headers.authorization;
-
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
-      }
-
       const token = authHeader.split(' ')[1];
-      const decoded = this.jwtService.verify(token);
-      if (!decoded || typeof decoded === 'string') {
-        throw new UnauthorizedException('Invalid access token');
-      }
-      request.user = decoded;
+      const secret = this.configService.get<string>('JWT_SECRET'); // Use the secret key from .env
+      const decoded = this.jwtService.verify(token, { secret });
 
+      if (!decoded) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      request.user = decoded;
       return true;
     } catch (error) {
-      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Invalid token');
     }
   }
 }

@@ -3,44 +3,36 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreatePaymentsDto } from '../dto/create-payments.dto';
 import { UpdatePaymentsDto } from '../dto/update-payments.dto';
-import { PaymentsSchema } from '../schema/payments.db';
-import { CustomerSchema } from '../schema/customer.db';
+import { Payments} from '../schema/payments.db';
 
 @Injectable()
 export class PaymentsRepository {
   constructor(
-    @InjectModel(PaymentsSchema.name)
-    private readonly paymentsModel: Model<PaymentsSchema>,
-    private readonly customerModel: Model<CustomerSchema>,
+    @InjectModel(Payments.name)
+    private readonly paymentsModel: Model<Payments>,
   ) {}
 
-  async create(createPaymentsDto: CreatePaymentsDto): Promise<PaymentsSchema> {
+  async create(createPaymentsDto: CreatePaymentsDto): Promise<Payments> {
     const newPayment = new this.paymentsModel(createPaymentsDto);
     return newPayment.save();
   }
 
-  async findAll(): Promise<PaymentsSchema[]> {
+  async findAll(): Promise<Payments[]> {
     return this.paymentsModel.find().populate('customer').exec();
   }
 
-  async findOne(referenceId: string): Promise<PaymentsSchema> {
+  async findOne(paymentId: string): Promise<Payments> {
+    return this.paymentsModel.findById(paymentId).populate('customer').exec();
+  }
+
+  async update(paymentId: string, updateData: Partial<UpdatePaymentsDto>): Promise<Payments> {
     return this.paymentsModel
-      .findOne({ referenceId })
+      .findByIdAndUpdate(paymentId, updateData, { new: true })
       .populate('customer')
       .exec();
   }
 
-  async update(
-    referenceId: string,
-    updatePaymentsDto: UpdatePaymentsDto,
-  ): Promise<PaymentsSchema> {
-    return this.paymentsModel
-      .findOneAndUpdate({ referenceId }, updatePaymentsDto, { new: true })
-      .populate('customer')
-      .exec();
-  }
-
-  async delete(referenceId: string): Promise<PaymentsSchema> {
-    return this.paymentsModel.findOneAndDelete({ referenceId }).exec();
+  async delete(paymentId: string): Promise<Payments> {
+    return this.paymentsModel.findByIdAndDelete(paymentId).exec();
   }
 }

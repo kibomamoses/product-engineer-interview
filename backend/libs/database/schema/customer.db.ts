@@ -5,32 +5,21 @@ import { Document } from 'mongoose';
   timestamps: true,
   collection: 'customers',
 })
-export class CustomerSchema extends Document {
-  @Prop({
-    required: true,
-  })
+export class Customer extends Document {  
+  @Prop({ required: true })
   firstName: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop({ required: true })
   lastName: string;
 
-  @Prop({
-    required: true,
-    unique: true,
-  })
+  @Prop({ required: true, unique: true })
   customerId: string;
 
-  @Prop({
-    required: true,
-    unique: true,
-  })
+  @Prop({ required: true, unique: true })
   phoneNumber: string;
 
   createdAt: Date;
-
   updatedAt: Date;
 }
 
-export const Customer = SchemaFactory.createForClass(CustomerSchema);
+export const CustomerSchema = SchemaFactory.createForClass(Customer);

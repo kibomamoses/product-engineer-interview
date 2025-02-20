@@ -1,37 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
-import { CustomerSchema } from './customer.db';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 
 @Schema({
   timestamps: true,
   collection: 'payments',
 })
-export class PaymentsSchema extends Document {
-  @Prop({
-    required: true,
-    unique: true,
-  })
+export class Payments extends Document {
+  @Prop({ required: true, unique: true })
   referenceId: string;
 
-  @Prop({
-    required: true,
-  })
+  @Prop({ required: true })
   amount: number;
 
-  @Prop({
-    type: { type: MongooseSchema.Types.ObjectId, ref: CustomerSchema.name },
-    required: false,
-  })
-  customer: CustomerSchema;
+  @Prop({ type: Types.ObjectId, ref: 'Customer' })
+  customer: Types.ObjectId;
 
-  @Prop({
-    default: 0,
-  })
+  @Prop({ default: 0 })
   version: number;
 
   createdAt: Date;
-
   updatedAt: Date;
 }
 
-export const Payments = SchemaFactory.createForClass(PaymentsSchema);
+export const PaymentsSchema = SchemaFactory.createForClass(Payments);
