@@ -22,37 +22,34 @@ export class PaymentService {
   }
 
   async reassignPayment(dto: ReassignPaymentDto): Promise<Payments> {
-    try {
-      const { paymentId, sourceCustomerId, targetCustomerId } = dto;
+    const { paymentId, sourceCustomerId, targetCustomerId } = dto;
   
-      //Ensure payment exists
-      const payment = await this.paymentsRepository.findOne(paymentId);
-      if (!payment) {
-        throw new NotFoundException('Payment not found');
-      }
-  
-      // Ensure source customer exists
-      const sourceCustomer = await this.customerRepository.findOne(sourceCustomerId);
-      if (!sourceCustomer) {
-        throw new NotFoundException('Source customer not found');
-      }
-  
-      //Ensure target customer exists
-      const targetCustomer = await this.customerRepository.findOne(targetCustomerId);
-      if (!targetCustomer) {
-        throw new NotFoundException('Target customer not found');
-      }
-  
-      // Assign only the target customer's ID, not the full object
-      payment.customer = targetCustomer._id as any;
-      // Explicitly cast `_id` to string and only update the required fields
-       const updatedPayment = await this.paymentsRepository.update(payment._id.toString(), {
-  customer: payment.customer, 
-});
-
-      return updatedPayment;
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    // Ensure payment exists
+    const payment = await this.paymentsRepository.findOne(paymentId);
+    if (!payment) {
+      throw new NotFoundException('Payment not found');
     }
+  
+    // Ensure source customer exists
+    const sourceCustomer = await this.customerRepository.findOne(sourceCustomerId);
+    if (!sourceCustomer) {
+      throw new NotFoundException('Source customer not found');
+    }
+  
+    // Ensure target customer exists
+    const targetCustomer = await this.customerRepository.findOne(targetCustomerId);
+    if (!targetCustomer) {
+      throw new NotFoundException('Target customer not found');
+    }
+  
+    // Reassign the payment's customer field to the target customer's ID
+    payment.customer = targetCustomer._id as any; // Ensure targetCustomer._id is a valid string
+  
+    // Update the payment in the repository
+    const updatedPayment = await this.paymentsRepository.update(payment._id.toString(), {
+      customer: payment.customer, 
+    });
+
+    return updatedPayment;
   }
 }
