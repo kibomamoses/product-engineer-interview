@@ -54,7 +54,7 @@ Tests are written using **Jest** and can be run with:
 npm run test
 ```
 ## Results
-![Product Image]([https://example.com/path/to/image.png](https://github.com/kibomamoses/product-engineer-interview/blob/main/home.JPG))
+[![Product Image](https://github.com/kibomamoses/product-engineer-interview/blob/main/home.JPG)](https://github.com/kibomamoses/product-engineer-interview)
 
 ## Thought Process and Implementation
 
