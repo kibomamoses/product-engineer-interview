@@ -1,6 +1,4 @@
-Here's a **README.md** file for your GitHub repository based on the details provided:
 
-```markdown
 # Mophone Product Engineer Role Interview
 
 This repository contains a Solution for the Mophone Product Engineer interview task. The task involves implementing a **"Reassign Payment"** feature in the backend using **NestJS** and the frontend using **Next.js** with **Tailwind CSS** and **TypeScript**. 
