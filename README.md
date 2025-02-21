@@ -1,17 +1,11 @@
 
 # Mophone Product Engineer Role Interview
 
-This repository contains a Solution for the Mophone Product Engineer interview task. The task involves implementing a **"Reassign Payment"** feature in the backend using **NestJS** and the frontend using **Next.js** with **Tailwind CSS** and **TypeScript**. 
+This repository contains a Solution for the Mophone Product Engineer interview task. The task involves implementing a **"Reassign Payment"** feature in the backend using **NestJS** and the Database using  **MongoDB**.And testing with ** Jest** (for testing the backend service) 
 
 ## Overview
 
-The interview task includes the implementation of a backend feature to reassign payments from one customer to another. This includes handling various cases such as non-existent payments or invalid customer IDs. The task also includes writing unit tests for the implemented functionality.
-
-### Technologies Used
-- **Backend:** NestJS
-- **Frontend:** Next.js with Tailwind CSS and TypeScript
-- **Database:** MongoDB (used via repositories for customer and payment management)
-- **Testing:** Jest (for testing the backend service)
+For this live coding session, the focus was on implementing a feature to reassign a payment from one customer to another within a NestJS backend and a Next.js frontend. The backend needs to handle the validation of IDs for payments and customers, and ensure the successful reassignment of payments. During the process, I also focused on writing clean, modular code, ensuring proper error handling, and maintaining solid testing practices.
 
 ## Features Implemented
 
@@ -32,69 +26,6 @@ The interview task includes the implementation of a backend feature to reassign 
    - Validates the request (Payment ID, Source and Target Customer IDs must exist).
    - Updates the payment record in the database with the new customer ID.
    - Returns the updated payment details in the response.
-
-### Frontend
-1. **Customer Management:**
-   - Displays a list of customers.
-   - Provides a form to add new customers.
-
-2. **Payment Management:**
-   - Displays a list of payments.
-   - Provides a form to add new payments.
-
-3. **Reassign Payment:**
-   - Interface to select source and target customers for payment reassignment.
-   - Calls the backend API to perform the reassignment and updates the UI with the result.
-
-## Installation
-
-### Backend Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/mophones/product-engineer-interview.git
-   ```
-
-2. Navigate to the `backend` directory:
-   ```bash
-   cd backend
-   ```
-
-3. Install the dependencies:
-   ```bash
-   npm install
-   ```
-
-4. Run the application:
-   ```bash
-   npm run start
-   ```
-
-   The backend will be available at [http://localhost:3000](http://localhost:3000).
-
-5. Run the test suite:
-   ```bash
-   npm run test
-   ```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install the dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Run the application:
-   ```bash
-   npm run dev
-   ```
-
-   The frontend will be available at [http://localhost:3000](http://localhost:3000).
 
 ## API Endpoints
 
@@ -131,6 +62,117 @@ npm run test
 - **Error Handling:** Proper error handling is implemented using NestJS's built-in exceptions like `NotFoundException` for non-existent resources.
 - **Testing:** Unit tests were written to ensure that the feature works as expected under different scenarios (successful reassignment, invalid payment or customer IDs).
 
+## Installation
+
+Follow the steps below to get the backend running on your local machine.
+
+### 1. **Clone the Repository**
+
+Clone the repository from GitHub to your local machine:
+
+```bash
+git clone https://github.com/mophones/product-engineer-interview.git
+cd backend
+```
+
+### 2. **Install Dependencies**
+
+Install the required dependencies using npm:
+
+```bash
+npm install
+```
+
+### 3. **Set Up Environment Variables**
+
+Create a `.env` file in the root of the backend project with the following content:
+
+```env
+MONGO_URI=mongodb://localhost:27017/mophone
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRATION=3600
+```
+
+Make sure MongoDB is running locally or you have a cloud MongoDB service.
+
+### 4. **Run the Backend**
+
+Start the NestJS application:
+
+```bash
+npm run start
+```
+
+The application will be available at `http://localhost:3000`.
+
+### 5. **Run the Tests**
+
+To run the test suite and ensure everything is working correctly, use:
+
+```bash
+npm run test
+```
+
+---
+
+## Testing with Postman
+
+Once the backend server is running, you can test the endpoints using Postman.
+
+### 1. **Authentication**
+   - **Sign Up**: `POST /auth/signup`
+     - Body (JSON):
+       ```json
+       {
+         "email": "user@example.com",
+         "password": "yourpassword"
+       }
+       ```
+   - **Login**: `POST /auth/login`
+     - Body (JSON):
+       ```json
+       {
+         "email": "user@example.com",
+         "password": "yourpassword"
+       }
+       ```
+     - Response will include a JWT token which will be used for authentication in subsequent requests.
+
+### 2. **Customer Management**
+   - **Add Customer**: `POST /customers`
+     - Body (JSON):
+       ```json
+       {
+         "name": "Customer Name",
+         "email": "customer@example.com"
+       }
+       ```
+   - **Get All Customers**: `GET /customers`
+
+### 3. **Payment Management**
+   - **Add Payment**: `POST /payments`
+     - Body (JSON):
+       ```json
+       {
+         "amount": 100,
+         "customer": "sourceCustomerId"
+       }
+       ```
+   - **Get All Payments**: `GET /payments`
+
+### 4. **Reassign Payment**
+   - **Reassign Payment**: `PUT /payments/reassign`
+     - Body (JSON):
+       ```json
+       {
+         "paymentId": "paymentId",
+         "sourceCustomerId": "sourceCustomerId",
+         "targetCustomerId": "targetCustomerId"
+       }
+       ```
+   - **Success**: The payment will be reassigned, and the updated payment object will be returned.
+   - **Failure**: If any entity (payment or customer) is invalid, appropriate error messages are returned (e.g., `Payment not found`, `Source customer not found`).
+
 ### Concurrency and Database Atomicity:
 - Ensured atomicity during payment reassignment by handling potential errors and rolling back changes if needed.
 - **Concurrency** was addressed by ensuring stateless operations, which reduces the risk of race conditions.
@@ -138,8 +180,3 @@ npm run test
 ## License
 
 This project is licensed under the MIT License.
-```
-
-### Notes:
-- You may adjust the URL in the clone command to reflect the correct repository link.
-- Ensure that the file and folder names match those in your actual repository structure.
